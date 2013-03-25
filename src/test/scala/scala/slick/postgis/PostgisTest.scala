@@ -1,19 +1,14 @@
 package scala.slick.postgis
 
 import org.scalatest.FunSuite
-import scala.slick.driver.PostgisDriver.simple._
+import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.postgis._
+import scala.slick.postgis.srid4326._
 
-class PostGisDriverTest extends FunSuite {
+class PostgisTest extends FunSuite {
     object TestTable extends Table[(Int, Geometry)]("geometry_table") {
         def id = column[Int]("id", O.PrimaryKey)
         def geom = column[Geometry]("geom")
-        def * = id ~ geom
-    }
-
-    object TestTable2 extends Table[(Int, Geometry)]("geometry_table2") with GeoOptions {
-        def id = column[Int]("id")
-        def geom = column[Geometry]("geom", GO.Srid(3906), GO.GeoType("LineString"))
         def * = id ~ geom
     }
 
@@ -21,11 +16,6 @@ class PostGisDriverTest extends FunSuite {
         try {
             TestTable.ddl.drop
         } catch {
-            case e:Exception => 
-        }
-        try {
-            TestTable2.ddl.drop
-        } catch { 
             case e:Exception => 
         }
     }
@@ -36,12 +26,8 @@ class PostGisDriverTest extends FunSuite {
             clearTables
             TestTable.ddl.createStatements.foreach(info(_))
             TestTable.ddl.create
-            TestTable2.ddl.createStatements.foreach(info(_))
-            TestTable2.ddl.create
             TestTable.ddl.dropStatements.foreach(info(_))
             TestTable.ddl.drop
-            TestTable2.ddl.dropStatements.foreach(info(_))
-            TestTable2.ddl.drop
         }
     }
 
